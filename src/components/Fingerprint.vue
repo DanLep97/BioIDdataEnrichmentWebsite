@@ -82,7 +82,7 @@ export default {
         displayResults () {
             var chunk = this.pagination.perPage
             var start = (this.pagination.page*chunk)-chunk
-            var end = start+chunk-1
+            var end = start+chunk
             console.log(chunk,start,end)
             this.pagination.chunk.terms = this.filtered.terms.slice(start,end)
         },
