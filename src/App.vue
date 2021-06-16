@@ -1,17 +1,26 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <!--  <vis-network/>-->
+    <div class="row">
+      <div class="col-lg-3"></div>
+      <div class="col-lg-6"><fingerprint/></div>
+      <div class="col-lg-3"></div>
+    </div>
+
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import VisNetwork from './components/VisNetwork.vue'
+import Fingerprint from "./components/Fingerprint.vue"
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HelloWorld,
+    VisNetwork,
+    Fingerprint,
   }
 }
 </script>
