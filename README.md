@@ -1,4 +1,4 @@
-# vueapp
+# Vue app to visualize enriched data in bio ID
 
 ## Project setup
 ```
