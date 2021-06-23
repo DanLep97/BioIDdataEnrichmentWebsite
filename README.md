@@ -19,4 +19,5 @@ npm run build
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## TODO
-Filtered PC terms have not an associated unprotID, right a function to retrieve each gene for each PC
+DONE Filtered PC terms have not an associated unprotID, right a function to retrieve each gene for each PC
+each GO term should have an associated weight score

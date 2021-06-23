@@ -1,26 +1,22 @@
 <template>
-  <div id="app">
+  <div class="container-fluid">
   <!--  <vis-network/>-->
     <div class="row">
-      <div class="col-lg-3"></div>
-      <div class="col-lg-6"><fingerprint/></div>
-      <div class="col-lg-3"></div>
+      <div class="col-lg-12">
+        <results/>
+      </div>
     </div>
 
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import VisNetwork from './components/VisNetwork.vue'
-import Fingerprint from "./components/Fingerprint.vue"
+import Results from "./components/Results/Index.vue"
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-    VisNetwork,
-    Fingerprint,
+    Results,
   }
 }
 </script>
