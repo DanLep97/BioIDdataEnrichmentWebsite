@@ -16,8 +16,8 @@
                             <div class="col-lg-3">{{term.complexName}}</div>
                             <div class="col-lg-3">
                                 <div class="row">
-                                    <div class="col-lg-4" v-for="gene in term.genes" :key="gene">
-                                        <a :href="`https://www.uniprot.org/uniprot${gene}`" target="_blank">{{gene}}</a>
+                                    <div class="col-lg-4" v-for="(gene,i) in term.genes" :key="gene+i">
+                                        <a class="genesymbol" :href="`https://www.uniprot.org/uniprot${gene}`" target="_blank">{{gene}}</a>
                                     </div>
                                 </div>
                             </div>

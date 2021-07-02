@@ -12,13 +12,15 @@
                         </div>
                     <div v-for="(term, i) in goData" :key="i">
                         <li :class="[term.isActive ? 'list-group-item list-group-item-success': 'list-group-item']">
-                            <div class="row">
+                            <div class="row" v-on:click="zoomOnMap(term.goID)">
                                 <div class="col-lg-3"><a :href=" 'https://www.ebi.ac.uk/QuickGO/term/' + term.goID" target="_blank">{{term.goID}}</a></div>
                                 <div class="col-lg-3">{{term.term}}</div>
                                 <div class="col-lg-3">
                                     <div class="row">
-                                        <div class="col-lg-4" v-for="gene in term.genes" :key="gene">
-                                            <a :href=" `https://www.uniprot.org/uniprot/${gene}` " target="_blank">{{gene}}</a>
+                                        <div class="col-lg-4" v-for="(gene,i) in term.genes" :key="gene.uniprotID+i">
+                                            <a class="genesymbol"
+                                            :class="[gene.uniqueness.includes('duplicated') ? 'redundant': 'unique']" 
+                                            :href=" `https://www.uniprot.org/uniprot/${gene.uniprotID}` " target="_blank">{{gene.geneSymbol}}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -32,6 +34,21 @@
     </div>
 </template>
 
+<style>
+.genesymbol {
+    font-size: 12px;
+}
+.unique {
+    color: #ff0000;
+}
+.interm {
+    color: #FFA500
+}
+.redundant {
+    color: #60e1f8;
+}
+</style>
+
 <script>
 
 export default {
@@ -44,6 +61,11 @@ export default {
             }
             this.goData.find(term => term.goID == termGOid).isActive=true
         })
+    },
+    methods: {
+        zoomOnMap(goID) {
+            this.$root.$emit("zoomOnMap", goID)
+        }
     }
 }
 </script>

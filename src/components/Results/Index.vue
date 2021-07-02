@@ -23,8 +23,7 @@
             <div class="col-lg-3"><button v-on:click="goFilter">GO!</button></div>
         </div>
         <div class="row">
-            <div class="col-lg-3"></div>
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <vis-network :graph="graph" :bait="bait"/>
             </div>
         </div>
@@ -60,9 +59,10 @@
 import axios from "axios"
 import GeneOntology from './GeneOntology.vue';
 import Pagination from "vue-pagination-2"
-import {enrichedGenes, enrichedGOdata, enrichedPCdata, graphs, baits} from "../../../enrichedData.json"
+import {enrichedGenes, enrichedGOdata, enrichedPCdata, graphsBP, graphsCC, baits} from "../../../enrichedData.json"
 import ProteinComplex from './ProteinComplex.vue'
 import VisNetwork from "./VisNetwork.vue"
+import PieChart from './PieChart.vue';
 
 export default {
     components: { 
@@ -70,11 +70,15 @@ export default {
         Pagination,
         ProteinComplex,
         VisNetwork,
+        PieChart,
     },
     data () {
         return {
             graph: [],
-            graphs,
+            graphs: {
+                graphsCC,
+                graphsBP
+            },
             bait: "",
             availableOnt: [
                 "CC",
@@ -127,7 +131,13 @@ export default {
             enrichedGOdata.forEach(term => {
                 //retrieve the list of genes for each GOterms
                 var GOterms = enrichedGenes.filter(gene => gene.goID == term._row);
-                term.genes = GOterms.map(term => term.uniprotID);
+                term.genes = GOterms.map(GOterm => {
+                    return {
+                        uniprotID: GOterm.uniprotID,
+                        uniqueness: GOterm.uniqueness.split("|"),
+                        geneSymbol: GOterm.GeneName
+                    }
+                });
                 //add custom properties if needed
                 term.isActive = false
             })
@@ -151,7 +161,7 @@ export default {
             this.displayResults(term)
         },
         filterGraphs() {
-            this.graph = graphs[this.bait]
+            this.graph = this.graphs[`graphs${this.ontology}`][this.bait]
         },
         displayResults (term) {
             var chunk = this.pagination.perPage
