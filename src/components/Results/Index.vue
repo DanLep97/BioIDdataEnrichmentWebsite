@@ -24,7 +24,7 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <vis-network :graph="graph" :bait="bait"/>
+                <vis-network :graph="graph" :goTerms="filtered.go" :bait="bait"/>
             </div>
         </div>
         <div class="row">
