@@ -39,6 +39,7 @@ export default {
     data () { 
         return {
             thresholds: [],
+            goTermsIDs: {},
             network: {},
             dotArray: [],
             visData: {
@@ -76,7 +77,7 @@ export default {
             var node = this.visData.nodes.find(n => n.id === goID)
             this.network.moveTo({
                 position: {x:node.x, y:node.y},
-                scale: 0.4,
+                scale: 0.3,
                 offset: {x:0, y:0},
                 animation: {
                     duration: 300,
@@ -126,10 +127,18 @@ export default {
             return avg
         },
         updateNodes() {
+            // for highlighting go terms in the graph present in the list of super enriched go terms
+            var goTermsIDs = this.goTerms.map(t => t.goID)
+
+            // regex match pattern to extract the score out of node's labels
+            var regexLabelScore = /\\[0-9.e<\s+-]*\\/g
+            var regexFocusOnNumber = /[\\<]/g
+            var regexReplace = /\\[0-9.e<\s+-]*\\|[0-9]*\s\/\s[0-9]*/g
+            // max and min score as the range for the color gradient of terms
             var scores = this.visData.nodes.map(n => {
-                var scoreValue = n.label.match(/\\[0-9.e\s+-]*\\/g)
+                var scoreValue = n.label.match(regexLabelScore)
                 if (scoreValue != null) {
-                    return parseFloat(scoreValue[0].replace(/\\/g, ""))
+                    return parseFloat(scoreValue[0].replace(regexFocusOnNumber, ""))
                 } else {
                     return 1
                 }
@@ -137,7 +146,8 @@ export default {
             var maxScore = scores[scores.length-1]
             var minScore = scores[0]
             var numOfThrsh = Math.ceil(-Math.log10(minScore) - (-Math.log10(maxScore)))
-            console.log(scores)
+            console.log("maxScore: ", maxScore, "minScore: ", minScore)
+            // make the gradient and the thresholds
             this.thresholds = []
             for(var i=0;i<=numOfThrsh;i++) {
                 var g = 255/numOfThrsh*i
@@ -148,32 +158,47 @@ export default {
                 this.thresholds.push(obj)    
             }
 
-            this.visData.nodes.forEach(node => {
-
-                var positions = node.pos.split(",")
-                node.y = -positions[1]*1.5
-                node.x = positions[0]*5
-
-                //change the color to visible
+            this.visData.nodes.forEach((node,i,a) => {
+                if (goTermsIDs.includes(node.id)) {
+                    node.shadow = {
+                        enabled: true
+                    }
+                }
+                /* DEPRECATED BEHAVIOUR
                 if (node.color.background == "black") {
                     node.color.background = "#d9f551"
                     node.shape = "box"
                 } else {
                     node.color.background = "#f56951"
-                }
+                }*/
 
-                // create orange gradiant for most significative terms and other terms will be in yellow
-                var scoreMatch = node.label.match(/\\[0-9.e\s+-]*\\/g)
-                var score = (scoreMatch != null) ?parseFloat(scoreMatch[0].replace(/\\/g, "")):1
+                // create orange-red gradiant for most significative terms and other terms will be in yellow
+                var scoreMatch = node.label.match(regexLabelScore)
+                var score = (scoreMatch != null) ?parseFloat(scoreMatch[0].replace(regexFocusOnNumber, "")):1
+                // retrieve the hex value from the thresholds variable 
                 node.color.background = this.thresholds.filter(th => th.threshold <= score).sort((a,b) => b.threshold - a.threshold)[0].hex
 
-                node.label = node.label.replace(/\\/, "\n")
-                node.label = node.label.replace(/\\[0-9.e\s+-]*\\|[0-9]*\s\/\s[0-9]*/g, "")
+                node.label = node.label.replace(/\\/, "\n") // make a newline between the GO:ID and the go term name
+                node.label = node.label.replace(regexReplace, "")
+
+                var positions = node.pos.split(",")
+                node.y = -positions[1]*1.5
+
+                
+
+                node.shape = "box"
 
                 //node.height = 1
-                node.font.size = 32
+                if (a.length>50) {
+                    node.font.size = 35
+                    node.x = positions[0]*5
+                } else {
+                    node.font.size = 20
+                    node.x = positions[0]*3
+                }
+
                 node.widthConstraint = {
-                    minimum: 200,
+                    minimum: 100,
                     maximum: 400,
                 }
 

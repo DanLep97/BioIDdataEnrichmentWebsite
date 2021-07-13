@@ -17,7 +17,10 @@
                             <div class="col-lg-3">
                                 <div class="row">
                                     <div class="col-lg-4" v-for="(gene,i) in term.genes" :key="gene+i">
-                                        <a class="genesymbol" :href="`https://www.uniprot.org/uniprot${gene}`" target="_blank">{{gene}}</a>
+                                        <a class="genesymbol" :class="[gene.uniqueness.includes('duplicated') ? 'redundant': 'unique']" 
+                                        :href="`https://www.uniprot.org/uniprot/${gene.uniprotID}`" target="_blank">
+                                            {{gene.geneName}}
+                                        </a>
                                     </div>
                                 </div>
                             </div>

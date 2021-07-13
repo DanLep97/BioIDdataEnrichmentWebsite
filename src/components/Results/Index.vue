@@ -1,11 +1,27 @@
 <template>
     <div>
+        <h3 class="text-center"><strong>Generate Data</strong></h3>
         <div class="row">
-            <input type="text" v-model="filters.lengthForBaits">
-            <button v-on:click="fingerprint">Fingerprint!</button>
+            <div class="col-lg-2"></div>
+            <div class="col-lg-10">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-4">
+                        <label for="lengthForBaits">Number of bait from the dataset to enrich:</label>
+                        <input id="lengthForBaits" type="text" v-model="filters.lengthForBaits">
+                        <label for="nodeLength">Number of significant nodes displayed on graph:</label>
+                        <input id="nodeLength" type="text" v-model="filters.nodeLength">
+                        <button v-on:click="fingerprint" id="fingerprintBtn">Fingerprint!</button>
+                    </div>
+                    <div class="col-lg-5"></div>
+                </div>
+            </div>
+            <div class="col-lg-2"></div>
         </div>
+        <hr>
+        <h3 class="text-center"><strong> Display Data </strong></h3>
         <div class="row">
-            <div class="col-lg-5"></div>
+            <div class="col-lg-3"></div>
             <div class="col-lg-2">
                 <label for="">Bait</label>
                 <select id="bait" v-model="bait">
@@ -20,24 +36,29 @@
                     <option v-for="ont in availableOnt" :key="ont">{{ont}}</option>
                 </select>
             </div>
-            <div class="col-lg-3"><button v-on:click="goFilter">GO!</button></div>
+            <div class="col-lg-5"><button v-on:click="goFilter">GO!</button></div>
         </div>
         <div class="row">
-            <div class="col-lg-12">
-                <vis-network :graph="graph" :goTerms="filtered.go" :bait="bait"/>
+            <div class="table-div">
+                <div class="col-lg-4 table-cell-div">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <!--<pagination @per-page="pagination.perPage"
+                            v-model="pagination.page.go" 
+                            :records="filtered.go.length" 
+                            @paginate="displayResults('go')"/>-->
+                            <gene-ontology :goData="pagination.chunk.go" :bait="bait"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 table-cell-div">
+                    <vis-network :graph="graph" :goTerms="filtered.go" :bait="bait"/>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-5">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <pagination @per-page="pagination.perPage"
-                        v-model="pagination.page.go" 
-                        :records="filtered.go.length" 
-                        @paginate="displayResults('go')"/>
-                        <gene-ontology :goData="pagination.chunk.go" :bait="bait"/>
-                    </div>
-                </div>
+                <pie-chart :pData="piechart.data"/>
             </div>
             <div class="col-lg-2"></div>
             <div class="col-lg-5">
@@ -54,6 +75,10 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+
+</style>
 
 <script>
 import axios from "axios"
@@ -74,6 +99,9 @@ export default {
     },
     data () {
         return {
+            piechart: {
+                data: {},
+            },
             graph: [],
             graphs: {
                 graphsCC,
@@ -106,6 +134,7 @@ export default {
                 bait: "E",
                 ont: "BP",
                 lengthForBaits: 0,
+                nodeLength: 5,
             },
             filtered: {
                 go: [],
@@ -117,13 +146,25 @@ export default {
     },
     computed: {
         enrichedPCdata () {
-            var unduplicatedEnrichedPCdata = enrichedPCdata.filter((el, i, a) => {
-               var pcID = el.pcID
-               var PCterms = enrichedPCdata.filter(pcTerm => pcTerm.pcID === pcID) //retrieve all pcTerms with the same pcID
-               el.genes = PCterms.map(pcTerm => pcTerm.uniprotID) // genes are the uniprotID of the found pcTerms
-               if (a.map(e => {return e.pcID}).indexOf(pcID) === i) { //this line allows to retrieve only the unique pcTerms
-                   return el
+            var unduplicatedEnrichedPCdata = enrichedPCdata
+            .filter((el,i,a) => { // get unique pcTerms with filters applied
+                var pcID = el.pcID
+                if (a.map(e => {return e.pcID}).indexOf(pcID) === i && el.pcCount > 1) { //this line allows to retrieve only the unique pcTerms
+                    return el
                }
+            })
+            .map(PCterm => { // generate the genes property with unique genes
+                var pcID = PCterm.pcID
+                //get the genes for the term
+                var PCterms = enrichedPCdata.filter(t => t.pcID === pcID && t.bait === PCterm.bait) //retrieve all pcTerms with the same pcID
+                PCterm.genes = PCterms.map(t => {
+                    return {
+                        uniqueness: t.uniqueness,
+                        uniprotID: t.uniprotID,
+                        geneName: t.geneName
+                    }
+                })
+                return PCterm
             })
             return unduplicatedEnrichedPCdata
         },
@@ -158,6 +199,10 @@ export default {
                     return el.bait.toLowerCase() == this.bait.toLowerCase() && el.ont == this.ontology
                 }
             })
+            // sort results
+            if (term == "pc") {
+                this.filtered[term] = this.filtered[term].sort((a,b) => b.pcCount - a.pcCount)
+            }
             this.displayResults(term)
         },
         filterGraphs() {
@@ -169,13 +214,26 @@ export default {
             var end = start+chunk
             this.pagination.chunk[term] = this.filtered[term].slice(start,end)
         },
+        toggleInputs (swtch) {
+            let inputs = "#lengthForBaits, #nodeLength, #fingerprintBtn"
+            if (swtch) {
+                $(inputs).prop("disabled", false)
+
+            } else {
+                $(inputs).prop("disabled", true)
+            }
+        },
         fingerprint () {  
-            axios.post("http://127.0.0.1:8048/fingerprint", {length: this.filters.lengthForBaits})
+            this.toggleInputs(false)
+            axios.post("http://127.0.0.1:8048/fingerprint", {
+                length: this.filters.lengthForBaits,
+                nodeLength: this.filters.nodeLength
+            })
                 .then(res => {
                     console.log(res)
                     this.enrichedData = res.data;
                     var dataStr = JSON.stringify(res.data)
-                    console.log(dataStr)
+                    this.toggleInputs(true)
                 })
                 .catch(err => {
                     console.log("error:", err)
