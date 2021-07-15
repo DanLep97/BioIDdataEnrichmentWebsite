@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div>
         <div class="well well-sm">
             <h3 class="text-center">Interactive map of biological processes terms for <strong>{{bait}}</strong> protein </h3>
             <div class="row">
@@ -75,15 +75,18 @@ export default {
     created () {
         this.$root.$on("zoomOnMap", goID => {
             var node = this.visData.nodes.find(n => n.id === goID)
-            this.network.moveTo({
-                position: {x:node.x, y:node.y},
-                scale: 0.3,
-                offset: {x:0, y:0},
-                animation: {
-                    duration: 300,
-                    easingFunction: "linear"
-                }
-            })
+            if (node) {
+                this.network.moveTo({
+                    position: {x:node.x, y:node.y},
+                    scale: 0.3,
+                    offset: {x:0, y:0},
+                    animation: {
+                        duration: 300,
+                        easingFunction: "linear"
+                    }
+                })
+                this.$root.$emit("highlightTerm", goID)
+            }
         })
     },
     watch: {

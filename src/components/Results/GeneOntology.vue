@@ -1,56 +1,64 @@
 <template>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="well well-sm">
-                <h3 class="text-center">Gene ontology for <strong>{{bait}}</strong> protein</h3>
-                <div id="go-table">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="go-td">Gene ontology ID</th>
-                                <th class="go-td">Gene ontology term</th>
-                                <th class="go-td">Gene Symbol</th>
-                                <th class="go-td">Fisher-Weight algorithm score</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(term, i) in goData" :key="i" 
-                            :class="{'success': term.isActive}" class="go-element"
-                            v-on:click="zoomOnMap(term.goID)">
-                                <td class="go-td"><a :href=" 'https://www.ebi.ac.uk/QuickGO/term/' + term.goID" target="_blank">{{term.goID}}</a></td>
-                                <td class="go-td">{{term.term}}</td>
-                                <td class="go-td">
-                                    <div class="col-lg-4" v-for="(gene,i) in term.genes" :key="gene.uniprotID+i">
+    <div>
+        <div class="well well-sm">
+            <h3 class="text-center">Gene ontology for <strong>{{bait}}</strong> protein</h3>
+            <div id="go">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="go-td">Gene Ontology ID</th>
+                            <th class="go-td">Gene Ontology Term</th>
+                            <th class="go-td">Gene Symbol</th>
+                            <th class="go-td">Fisher-Weight Algorithm Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(term, i) in goData" :key="i"
+                        :class="{'success': term.isActive}" class="go-element"
+                        v-on:click="zoomOnMap(term.goID)">
+                            <td class="go-td"><a :href=" 'https://www.ebi.ac.uk/QuickGO/term/' + term.goID" target="_blank">{{term.goID}}</a></td>
+                            <td class="go-td">{{term.term}}</td>
+                            <td class="go-td">
+                                <div class='go-flex-td'>
+                                    <div class="go-flex-td-item" v-for="(gene,i) in term.genes" :key="gene.uniprotID+i">
                                         <a class="genesymbol"
                                         :class="[gene.uniqueness.includes('duplicated') ? 'redundant': 'unique']"
                                         :href=" `https://www.uniprot.org/uniprot/${gene.uniprotID}` " target="_blank">{{gene.geneSymbol}}
                                         </a>
                                     </div>
-                                </td>
-                                <td class="go-td">{{term.score}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                            <td class="go-td">{{term.score}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </template>
 
-<style>
-#go-table {
-    overflow-y: scroll;
-    max-height: 850px;
+<style scoped>
+#go {
+    overflow-y: auto;
+    max-height:851px;
 }
-/* .go-titles {
-    border-left-width: 1px;
-    border-left-color: red;
-    border-left-style: solid;
-} */
+</style>
 
-.table>thead>tr>.go-td, .table>tbody>tr>.go-td {
+<style>
+
+table>thead>tr>.go-td, table>tbody>tr>.go-td {   
     text-align: center;
     vertical-align: middle;
+    width:20%; 
+}
+
+table>tbody>tr>td>.go-flex-td {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-column-gap: 1em;
+}
+table>tbody>tr>td>.go-flex-td-item {
+    grid-column-start: auto;
 }
 
 .go-id {
@@ -70,7 +78,7 @@
     color: #ff0000;
 }
 .interm {
-    color: #FFA500
+    color: #FFA500;
 }
 
 </style>
@@ -94,7 +102,6 @@ export default {
         },
         zoomOnMap(goID) {
             this.$root.$emit("zoomOnMap", goID)
-            this.toggleActive(goID)
         }
     }
 }

@@ -38,46 +38,41 @@
             </div>
             <div class="col-lg-5"><button v-on:click="goFilter">GO!</button></div>
         </div>
-        <div class="row">
-            <div class="table-div">
-                <div class="col-lg-4 table-cell-div">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <!--<pagination @per-page="pagination.perPage"
-                            v-model="pagination.page.go" 
-                            :records="filtered.go.length" 
-                            @paginate="displayResults('go')"/>-->
-                            <gene-ontology :goData="pagination.chunk.go" :bait="bait"/>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-8 table-cell-div">
-                    <vis-network :graph="graph" :goTerms="filtered.go" :bait="bait"/>
-                </div>
+        <div class="grid-div">
+            <div class="grid-cell-div cell-div cell-div-1">
+                <!--<pagination @per-page="pagination.perPage"
+                v-model="pagination.page.go" 
+                :records="filtered.go.length" 
+                @paginate="displayResults('go')"/>-->
+                <gene-ontology :goData="pagination.chunk.go" :bait="bait"/>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-5">
-                <pie-chart :pData="piechart.data"/>
+            <div class="grid-cell-div cell-div cell-div-2">
+                <vis-network :graph="graph" :goTerms="filtered.go" :bait="bait"/>
             </div>
-            <div class="col-lg-2"></div>
-            <div class="col-lg-5">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <pagination @per-page="pagination.perPage" 
-                        v-model="pagination.page.pc" 
-                        :records="filtered.pc.length" 
-                        @paginate="displayResults('pc')"/>
-                        <protein-complex :pcData="pagination.chunk.pc" :bait="bait"/>
-                    </div>
-                </div>
+            <div class="grid-cell-div cell-div cell-div-3">
+                <protein-complex :pcData="pagination.chunk.pc" :bait="bait"/>
+                <pagination @per-page="pagination.perPage" 
+                v-model="pagination.page.pc" 
+                :records="filtered.pc.length" 
+                @paginate="displayResults('pc')"/>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-
+.grid-div {
+    display: grid;
+    grid-template-columns: 4fr 8fr;
+    grid-auto-rows: min-content;
+    overflow:hidden;
+    /* grid-row-gap: 100px; */
+    grid-column-gap: 1em;
+}
+.cell-div-3 {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
 </style>
 
 <script>
