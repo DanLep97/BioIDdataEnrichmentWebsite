@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3 class="text-center"><strong>Generate Data</strong></h3>
+        <!-- <h3 class="text-center"><strong>Generate Data</strong></h3>
         <div class="row">
             <div class="col-lg-2"></div>
             <div class="col-lg-10">
@@ -19,25 +19,37 @@
             <div class="col-lg-2"></div>
         </div>
         <hr>
-        <h3 class="text-center"><strong> Display Data </strong></h3>
-        <div class="row">
-            <div class="col-lg-3"></div>
-            <div class="col-lg-2">
-                <label for="">Bait</label>
-                <select id="bait" v-model="bait">
-                    <option disable>Choose</option>
-                    <option v-for="b in baits" :key="b">{{b}}</option>
-                </select>
+        -->
+        <h2 class="text-center"><strong> Display Data </strong></h2>
+        <br>
+            <div>
+                <div class="field-flex">
+                    <div class="field-item">
+                        <label for="">Bait </label>
+                        <select id="bait" v-model="bait">
+                            <option disable>Choose</option>
+                            <option v-for="b in baits" :key="b">{{b}}</option>
+                        </select>
+                    </div>
+                    <div class="field-item">
+                        <label for="">Ontology </label>
+                        <select id="ont" v-model="ontology">
+                            <option disable>Choose</option>
+                            <option v-for="ont in availableOnt" :key="ont">{{ont}}</option>
+                        </select>
+                    </div>
+                    <div class="field-item">
+                        <label for="">Focus on </label>
+                        <select id="uniqueness" v-model="uniqueness">
+                            <option disable>Choose</option>
+                            <option v-for="opt in availableFocus" :key="opt">{{opt}}</option>
+                        </select>
+                    </div>
+                    <div class="field-item field-item-go">
+                        <button v-on:click="goFilter">GO!</button>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-2">
-                    <label for="">Ontology</label>
-                    <select id="ont" v-model="ontology">
-                    <option disable>Choose</option>
-                    <option v-for="ont in availableOnt" :key="ont">{{ont}}</option>
-                </select>
-            </div>
-            <div class="col-lg-5"><button v-on:click="goFilter">GO!</button></div>
-        </div>
         <div class="grid-div">
             <div class="grid-cell-div cell-div cell-div-1">
                 <!--<pagination @per-page="pagination.perPage"
@@ -61,6 +73,19 @@
 </template>
 
 <style scoped>
+.field-flex {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+.field-item {
+    padding-left: 1em;
+    padding-bottom: 0.8em; 
+}
+label {
+    font-size: 16px;
+    padding-right: 0.8em;
+}
 .grid-div {
     display: grid;
     grid-template-columns: 4fr 8fr;
@@ -69,6 +94,10 @@
     /* grid-row-gap: 100px; */
     grid-column-gap: 1em;
 }
+/* .cell-div-2 {
+    grid-column-start: 1;
+    grid-column-end: 3;
+} */
 .cell-div-3 {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -107,10 +136,15 @@ export default {
                 "CC",
                 "BP"
             ],
+            uniqueness: "unique",
+            availableFocus: [
+                "unique",
+                "all"
+            ],
             ontology: "BP",
             baits,
             pagination: {
-                perPage: 25,
+                perPage: 20,
                 chunk: {
                     go: [],
                     pc: [],
@@ -139,6 +173,11 @@ export default {
     },
     watch: {
     },
+    created() {
+        // console.log(this.enrichedGOdata.filter(el => {return el.bait == "E" && el.ont == "BP"}))
+        // console.log(enrichedGenes.filter(gene => {return gene.uniprotID=="Q92995"}))
+        console.log(enrichedGOdata)
+    },
     computed: {
         enrichedPCdata () {
             var unduplicatedEnrichedPCdata = enrichedPCdata
@@ -166,7 +205,13 @@ export default {
         enrichedGOdata () {
             enrichedGOdata.forEach(term => {
                 //retrieve the list of genes for each GOterms
-                var GOterms = enrichedGenes.filter(gene => gene.goID == term._row);
+                var GOterms = enrichedGenes.filter(gene => gene.goID == term.goID && gene.bait == term.bait);
+                if (term.unique == true) {
+                    term.unique = ["unique", "all"]
+                }
+                else {
+                    term.unique = ["all"]
+                }
                 term.genes = GOterms.map(GOterm => {
                     return {
                         uniprotID: GOterm.uniprotID,
@@ -191,7 +236,9 @@ export default {
                 if (term == 'pc') {
                     return el.bait.toLowerCase() == this.bait.toLowerCase()
                 } else {
-                    return el.bait.toLowerCase() == this.bait.toLowerCase() && el.ont == this.ontology
+                    return el.bait.toLowerCase() == this.bait.toLowerCase() && 
+                    el.ont == this.ontology && 
+                    el.unique.includes(this.uniqueness)
                 }
             })
             // sort results

@@ -1,27 +1,36 @@
 <template>
-  <div class="container-fluid">
-  <!--  <vis-network/>-->
-    <div class="row">
-      <div class="col-lg-12">
-        <results/>
-      </div>
+  <div class="wrapper">
+    <div class="section">
+      <header-nav/>
     </div>
-
+    <div class="section">
+      <about/>
+    </div>
+    <div class="section">
+      <results/>
+    </div>
   </div>
 </template>
 
 <script>
 import Results from "./components/Results/Index.vue"
+import About from "./components/About.vue"
+import HeaderNav from "./components/Header.vue"
 
 export default {
   name: 'App',
   components: {
     Results,
+    About,
+    HeaderNav,
   }
 }
 </script>
 
 <style>
+.wrapper {
+  width: 100%;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

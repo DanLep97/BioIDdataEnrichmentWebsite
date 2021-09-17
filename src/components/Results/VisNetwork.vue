@@ -1,30 +1,53 @@
 <template>
     <div>
-        <div class="well well-sm">
-            <h3 class="text-center">Interactive map of biological processes terms for <strong>{{bait}}</strong> protein </h3>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div id="network"></div>
+        <div class="network-container">
+            <h3 class="network-title">Interactive map of biological processes terms for <strong>{{bait}}</strong> protein </h3>
+            <div id="network"></div>
+            <div class="threshold">
+                <div class="threshold-text">-log10 of thresholds: </div> 
+                <div v-for="th in thresholds" :key="th.threshold" class="threshold-thresholds" :style="`background-color: ${th.hex}`">
+                    {{-Math.log10(th.threshold)}}
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="col-lg-1 text-right">-log10 of thresholds: </div> 
-                    <div class="col-lg-11">
-                        <span v-for="th in thresholds" :key="th.threshold" class="threshold" :style="`background-color: ${th.hex}`">
-                            {{-Math.log10(th.threshold)}}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3"></div>
-                <div class="col-lg-3"></div>
-                <div class="col-lg-6"><h4 class="text-right">Top 5 most significative terms (in red)</h4></div>
             </div>
         </div>
     </div> 
 </template>
+<style>
+.threshold {
+    display: flex;
+    margin-top: 5px;
+}
+.threshold-text {
+    width: 150px;
+    border: 1px solid rgb(58, 31, 31);
+    border-radius: 12px;
+    background-color: white;
+    padding: 3px;
+    text-align: center;
+}
+.threshold-thresholds {
+    width: 100px;
+    flex: 1 1 auto;
+    text-align: center;
+    border: 1px solid rgb(58, 31, 31);
+    border-radius: 12px;
+    padding: 3px;
+}
+.network-container {
+    background-color:wheat;
+    padding: 0.1em 1em 2em 1em;
+}
+.network-title {
+    text-align: center;
+}
+#network {
+    height: 800px; 
+    border: 1px solid lightgray;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+}
+</style>
 
 <script>
 import {parseDOTNetwork} from "vis-network/standalone"
@@ -87,7 +110,7 @@ export default {
                 })
                 this.$root.$emit("highlightTerm", goID)
             }
-        })
+        });
     },
     watch: {
         graph(val) {
@@ -193,7 +216,7 @@ export default {
 
                 //node.height = 1
                 if (a.length>50) {
-                    node.font.size = 35
+                    node.font.size = 40
                     node.x = positions[0]*5
                 } else {
                     node.font.size = 20
@@ -214,18 +237,3 @@ export default {
 }
 </script>
 
-<style>
-.threshold {
-    float: left;
-    text-align: center;
-    width: 70px;
-    margin-left: 10px;
-}
-#network {
-    height: 800px;
-    border: 1px solid lightgray;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: white;
-}
-</style>

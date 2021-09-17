@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div class="well well-sm">
-            <h3 class="text-center">Gene ontology for <strong>{{bait}}</strong> protein</h3>
+        <div class="table-container">
+            <h3 class="table-title">Gene ontology for <strong>{{bait}}</strong> protein</h3>
             <div id="go">
-                <table class="table table-bordered table-striped">
+                <table class="table-table">
                     <thead>
                         <tr>
                             <th class="go-td">Gene Ontology ID</th>
@@ -42,6 +42,31 @@
     overflow-y: auto;
     max-height:851px;
 }
+.table-container {
+    width: 100%;
+    background-color:wheat;
+    margin: 0;
+    padding: 0.1em 1em 1em 1em
+}
+
+.table-title {
+    text-align: center;
+}
+
+.table-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: white;
+}
+.table-table thead {
+    background-color: #e4edeb;
+}
+.table-table td, .table-table th {
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    border-left: 1px solid #e1f0ed;
+    padding: 5px;
+}
 </style>
 
 <style>
@@ -53,12 +78,11 @@ table>thead>tr>.go-td, table>tbody>tr>.go-td {
 }
 
 table>tbody>tr>td>.go-flex-td {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    grid-column-gap: 1em;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }
 table>tbody>tr>td>.go-flex-td-item {
-    grid-column-start: auto;
 }
 
 .go-id {
