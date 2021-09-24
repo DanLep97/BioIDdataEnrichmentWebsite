@@ -37,7 +37,7 @@
     </div>
 </template>
 
-<style scoped>
+<style>
 #go {
     overflow-y: auto;
     max-height:851px;

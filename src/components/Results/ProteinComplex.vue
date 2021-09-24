@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div class="well well-sm">
-            <h3 class="text-center">Protein complex enrichment for <strong>{{bait}}</strong> protein</h3>
-            <table class="table table-bordered table-striped">
+        <div class="table-container">
+            <h3 class="table-title">Protein complex enrichment for <strong>{{bait}}</strong> protein</h3>
+            <table class="table-table">
                 <thead>
                     <tr>
                         <th class="go-td">Protein Complex name</th>
@@ -17,7 +17,7 @@
                         <td class="go-td">{{term.complexName}}</td>
                         <td class="go-td">
                             <div class="go-flex-td">
-                                <div v-for="(gene,i) in term.genes" :key="gene+i">
+                                <div class="go-flex-td-item" v-for="(gene,i) in term.genes" :key="gene+i">
                                     <a class="genesymbol" :class="[gene.uniqueness.includes('duplicated') ? 'redundant': 'unique']" 
                                     :href="`https://www.uniprot.org/uniprot/${gene.uniprotID}`" target="_blank">
                                         {{gene.geneName}}

@@ -93,6 +93,7 @@ label {
     overflow:hidden;
     /* grid-row-gap: 100px; */
     grid-column-gap: 1em;
+    row-gap: 1em;
 }
 /* .cell-div-2 {
     grid-column-start: 1;

@@ -1,21 +1,25 @@
 <template>
-  <div class="wrapper">
-    <div class="section">
-      <header-nav/>
-    </div>
-    <div class="section">
-      <about/>
-    </div>
-    <div class="section">
-      <results/>
-    </div>
-  </div>
+	<div class="wrapper">
+		<div class="section">
+    		<header-nav/>
+    	</div>
+		<!--<div class="section">
+			<inputs/>
+		</div> -->
+    	<div class="section">
+    	  	<about/>
+    	</div>
+    	<div class="section">
+      		<results/>
+    	</div>
+	</div>
 </template>
 
 <script>
 import Results from "./components/Results/Index.vue"
 import About from "./components/About.vue"
 import HeaderNav from "./components/Header.vue"
+import Inputs from "./components/Inputs/Index.vue"
 
 export default {
   name: 'App',
@@ -23,6 +27,7 @@ export default {
     Results,
     About,
     HeaderNav,
+    Inputs,
   }
 }
 </script>

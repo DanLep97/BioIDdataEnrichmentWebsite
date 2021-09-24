@@ -1,8 +1,8 @@
 <template>
     <div class="header">
         <div class="site-title">
-            <span>SARS-CoV-2 proximal interactome enhanced enrichment</span>
             <span class="logo"><img src="/images/logo.png" class="logo" alt="" height="100"/></span>
+            <span>SARS-CoV-2 proximal interactome enhanced enrichment</span>
             
         </div>
         
@@ -18,10 +18,6 @@ export default {
 }
 </script>
 <style scoped>
-.logo {
-    position: absolute;
-    left: 0.2em;
-}
 .nav-links {
     background-color: red;
     padding: 0.1em 1em;
@@ -43,10 +39,13 @@ export default {
 }
 .header {
     padding: 1em;
+    margin-bottom: 3em;
 }
 .site-title {
     text-align: center;
     font-weight: 900;
     font-size: 40px;
+    display: flex;
+    justify-content: center;
 }
 </style>
